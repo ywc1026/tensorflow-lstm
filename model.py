@@ -1,3 +1,9 @@
+"""Examples for building a stocks LSTM model.
+
+    Imitate the char-rnn-tensorflow
+https://github.com/Guinsoon/char-rnn-tensorflow
+"""
+
 import tensorflow as tf
 from tensorflow.python.ops import rnn_cell
 from tensorflow.python.ops import seq2seq
