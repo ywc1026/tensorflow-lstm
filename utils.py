@@ -21,8 +21,8 @@ class DataLoader():
         reader = pd.read_csv(file, encoding='gbk', iterator=True)
         df = reader.get_chunk(200000)
         df.index = pd.DatetimeIndex(df['QTime'])
-        pct2 = df['ChangePCT2'].between_time(time(9,30), time(15,0))
-        pct = pct2.reset_index()['ChangePCT2']
+        pct2 = df['ChangePCT1'].between_time(time(9,30), time(15,0))
+        pct = pct2.reset_index()['ChangePCT1']
         self.pct = np.array(pct)
 
     def create_batches(self):
