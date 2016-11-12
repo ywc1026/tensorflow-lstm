@@ -45,9 +45,8 @@ def sample(args):
     # with open(os.path.join(args.save_dir, 'chars_vocab.pkl'), 'rb') as f:
     #     chars, vocab = cPickle.load(f)
     model = Model(saved_args)
-    costs = 0.0
+    final_accuracy = 0.0
     iters = 0
-    accuracy = 0.0
     with tf.Session() as sess:
         tf.initialize_all_variables().run()
         saver = tf.train.Saver(tf.all_variables())
@@ -62,18 +61,16 @@ def sample(args):
                 start = time.time()
                 x, y = data_loader.next_batch()
                 feed = {model.input_data: x, model.targets: y, model.initial_state: state}
-                test_loss, state, _ = sess.run([model.cost, model.final_state, model.train_op], feed)
-                loss = (test_loss ** 0.5) * args.batch_size
-                costs += loss
-                iters += args.seq_length
+                test_loss, state, _, accuracy = sess.run([model.cost, model.final_state, model.train_op, model.accuracy], feed)
+                final_accuracy += accuracy
+                iters += 1
                 end = time.time()
                 print("{}/{} (epoch {}), test_loss = {:.3f}, time/batch = {:.3f}" \
                     .format(e * data_loader.num_batches + b,
                             args.num_epochs * data_loader.num_batches,
                             e, test_loss, end - start))
 
-        accuracy = 1 - (costs / iters)
-        print("Accuray is %.3f" % accuracy)
+        print("Accuray is %.3f" % (final_accuracy / iters))
         
 
 if __name__ == '__main__':
