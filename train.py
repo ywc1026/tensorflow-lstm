@@ -80,6 +80,8 @@ def train(args):
     #     cPickle.dump((data_loader.chars, data_loader.vocab), f)
         
     model = Model(args)
+    total =0.0
+    iters = 0
 
     with tf.Session() as sess:
         tf.initialize_all_variables().run()
@@ -95,12 +97,14 @@ def train(args):
                 start = time.time()
                 x, y = data_loader.next_batch()
                 feed = {model.input_data: x, model.targets: y, model.initial_state: state}
-                train_loss, state, _ = sess.run([model.cost, model.final_state, model.train_op], feed)
+                train_loss, state, _, accuracy = sess.run([model.cost, model.final_state, model.train_op, model.accuracy], feed)
+                total += accuracy
+                iters += 1
                 end = time.time()
-                print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}" \
+                print("{}/{} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}, {:.3f}" \
                     .format(e * data_loader.num_batches + b,
                             args.num_epochs * data_loader.num_batches,
-                            e, train_loss, end - start))
+                            e, train_loss, end - start, accuracy))
                 if (e * data_loader.num_batches + b) % args.save_every == 0\
                     or (e==args.num_epochs-1 and b == data_loader.num_batches-1): # save for the last result
                     checkpoint_path = os.path.join(args.save_dir, 'model.ckpt')

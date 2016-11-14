@@ -45,7 +45,7 @@ def sample(args):
     # with open(os.path.join(args.save_dir, 'chars_vocab.pkl'), 'rb') as f:
     #     chars, vocab = cPickle.load(f)
     model = Model(saved_args)
-    final_accuracy = 0.0
+    total = 0.0
     iters = 0
     with tf.Session() as sess:
         tf.initialize_all_variables().run()
@@ -62,15 +62,15 @@ def sample(args):
                 x, y = data_loader.next_batch()
                 feed = {model.input_data: x, model.targets: y, model.initial_state: state}
                 test_loss, state, _, accuracy = sess.run([model.cost, model.final_state, model.train_op, model.accuracy], feed)
-                final_accuracy += accuracy
+                total += accuracy
                 iters += 1
                 end = time.time()
-                print("{}/{} (epoch {}), test_loss = {:.3f}, time/batch = {:.3f}" \
+                print("{}/{} (epoch {}), test_loss = {:.3f}, time/batch = {:.3f}, {:.3f}" \
                     .format(e * data_loader.num_batches + b,
                             args.num_epochs * data_loader.num_batches,
-                            e, test_loss, end - start))
+                            e, test_loss, end - start, accuracy))
 
-        print("Accuray is %.3f" % (final_accuracy / iters))
+        print("Accuray is %.3f" % (total / iters))
         
 
 if __name__ == '__main__':

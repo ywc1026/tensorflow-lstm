@@ -52,7 +52,8 @@ class Model():
         rnn_output = tf.reshape(tf.concat(1, outputs), [-1, args.rnn_size])
         logits = tf.matmul(rnn_output, softmax_w) + softmax_b
         self.cost = tf.reduce_mean(tf.square(logits - tf.reshape(self.targets, [-1])))
-        correct_prediction = tf.equal(logits, tf.reshape(self.targets, [-1]))
+        correct_prediction = tf.less_equal((logits - tf.reshape(self.targets, [-1])), 
+            tf.constant(0.2, shape=[args.batch_size * args.seq_length]))
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
         self.final_state = state
         self.lr = tf.Variable(0.0, trainable=False)
